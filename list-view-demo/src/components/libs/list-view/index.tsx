@@ -5,8 +5,13 @@ import { ListView } from "./ListView";
 import { ListViewActionButtonGroup } from "./ListViewActionButtonGroup";
 import { ListViewFormActionButtonGroup } from "./ListViewFormActionButtonGroup";
 
+interface User {
+  name: string;
+  email: string;
+}
+
 export const ListViewContainer: FC = () => {
-  const [sourceItems, setSourceItems] = useState(getToppingItems());
+  const [sourceItems, setSourceItems] = useState<string[]>([]);
   const [targetItems, setTargetItems] = useState<string[]>([]);
   const [lrActionBtnFlag, setLRActionBtnFlag] = useState(false);
   const [rlActionBtnFlag, setRLActionBtnFlag] = useState(false);
@@ -18,6 +23,12 @@ export const ListViewContainer: FC = () => {
   const [targetCheckedState, setTargetCheckedState] = useState(
     new Map<string, boolean>(targetItems.map((item) => [getKey(item)!, false]))
   );
+
+  useEffect(() => {
+    // setSourceItems(getToppingItems());
+
+    getMyData();
+  }, []);
 
   useEffect(() => {
     setSubmitFlag(
@@ -70,7 +81,8 @@ export const ListViewContainer: FC = () => {
   };
 
   const resetHandler = () => {
-    setSourceItems(getToppingItems());
+    // setSourceItems(getToppingItems());
+    getMyData();
     setTargetItems([]);
     setLRActionBtnFlag(false);
     setRLActionBtnFlag(false);
@@ -97,6 +109,13 @@ export const ListViewContainer: FC = () => {
         )
         .join(", ")
     );
+  };
+
+  const getMyData = async () => {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+    const data: User[] = await response.json();
+
+    setSourceItems(data.map((r) => r.name));
   };
 
   return (
